@@ -1,8 +1,5 @@
 # GestureDrive hardware BOM (no kits)
 
-Order these loose parts. Do not buy a 2WD/4WD smart-car kit or a metal Ackermann chassis kit.
-WiFi is on the Elegoo ESP32 already — no extra radio.
-
 Street prices are USD estimates. Search the **query** column on Amazon or a hobby shop.
 
 ## Already on hand
@@ -30,12 +27,6 @@ Street prices are USD estimates. Search the **query** column on Amazon or a hobb
 | GD-11 | M3 screws/nuts/standoffs + M3 heat-set inserts | 1 | $8–$12 | `M3 heat set inserts knurled 3D print` | Printed mounts |
 | GD-12 | Mini breadboard + Dupont jumpers | 1 | $6–$8 | `mini breadboard jumper wire pack` | Signal wiring |
 | GD-13 | Swivel caster | 1 | $3 | `robot swivel caster 1 inch` | 2WD fallback if steering binds |
-
-## Do not buy
-
-- Smart robot car kits, Hiwonder/Yahboom chassis kits
-- HC-05 / HM-10 / Bluetooth dongles, ESP8266, ESP32-CAM
-- Custom PCB fab, YOLO/lidar, suspension kit (v1)
 
 ## Power rules
 
