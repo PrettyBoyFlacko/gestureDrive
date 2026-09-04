@@ -1,12 +1,14 @@
 import cv2
 import mediapipe as mp
 import math
+import udp_server as udp
 
 # MediaPipe setup
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 
 cap = cv2.VideoCapture(0)
+udp.init("127.0.0.1", 5005)
 
 with mp_hands.Hands(
     max_num_hands=2,
@@ -139,6 +141,7 @@ with mp_hands.Hands(
         # Only print when command changes
         if command != prev_command:
             print(f"Command: {command} | Speed: {speed} | Steering: {steering}")
+            udp.send(f"Command: {command} | Speed: {speed} | Steering: {steering}".encode("utf-8"))
             prev_command = command
 
         # Display text

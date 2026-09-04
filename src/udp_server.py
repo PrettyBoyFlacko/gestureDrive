@@ -1,8 +1,14 @@
 import socket
 
-UDP_IP = "127.0.0.1"
-UDP_PORT = 5005
-MESSAGE = b"Hello, World!"
+global UDP_IP
+global UDP_PORT
+global sock
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
+def init(ip: str, port: int):
+    global UDP_IP, UDP_PORT, sock
+    UDP_IP = ip
+    UDP_PORT = port 
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+def send(msg):
+    sock.sendto(msg, (UDP_IP, UDP_PORT))
