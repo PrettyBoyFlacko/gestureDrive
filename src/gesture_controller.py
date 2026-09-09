@@ -8,7 +8,10 @@ mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 
 cap = cv2.VideoCapture(0)
-udp.init("127.0.0.1", 5005)
+
+client_ip = input("Enter client IP address: ")
+client_port = int(input("Enter port number: "))
+udp.init(client_ip, client_port)
 
 with mp_hands.Hands(
     max_num_hands=2,
