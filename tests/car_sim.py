@@ -25,6 +25,16 @@ TURN_SPEED = 0.5  # degrees per frame
 WHITE = (255, 255, 255)
 RED = (200, 0, 0)
 
+class Path:
+    def __init__(self, x, y):
+        self.points = [(x, y), (x, y)]
+
+    def add_point(self, x, y):
+        self.points.append((x, y))
+
+    def draw(self, surface):
+        pygame.draw.lines(surface, (0, 0, 0), False, self.points)
+
 class Car:
     def __init__(self, x, y):
         self.x = x
@@ -34,6 +44,7 @@ class Car:
         self.image = pygame.Surface((CAR_WIDTH, CAR_HEIGHT), pygame.SRCALPHA)
         pygame.draw.polygon(self.image, RED, [(0, 0), (CAR_WIDTH, CAR_HEIGHT // 2), (0, CAR_HEIGHT)])
         self.original_image = self.image
+        self.path = Path(x, y)
 
     def update(self, commands):
         # Acceleration & braking
@@ -65,6 +76,8 @@ class Car:
                 self.angle += TURN_SPEED * (-1 if self.speed > 0 else 1)
             if "RIGHT" in commands:
                 self.angle -= TURN_SPEED * (-1 if self.speed > 0 else 1)
+            # Add to path
+            self.path.add_point(self.x, self.y)
 
         # Update position
         rad = math.radians(self.angle)
@@ -75,6 +88,7 @@ class Car:
         rotated_image = pygame.transform.rotate(self.original_image, -self.angle)
         rect = rotated_image.get_rect(center=(self.x, self.y))
         surface.blit(rotated_image, rect.topleft)
+        self.path.draw(surface)
 
 def main(control_func):
     car = Car(WIDTH // 2, HEIGHT // 2)
@@ -97,6 +111,8 @@ def main(control_func):
 
 import controllers.keyboard as keyboard
 import controllers.hands as hands
+import controllers.one_hand as one_hand
+import controllers.minimal_hand as min_hand
 
 if __name__ == "__main__":
-    main(hands.get_commands)
+    main(min_hand.get_commands)
