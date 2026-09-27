@@ -93,8 +93,8 @@ def get_commands():
             bends_avg /= 4
 
             thumb_threshold = 0.5
-            if abs(thumb_dir[0]) > thumb_threshold:
-                if thumb_dir[0] > 0:
+            if abs(thumb_dir[1]) > thumb_threshold:
+                if thumb_dir[1] > 0:
                     steering = "LEFT"
                     commands.append("LEFT")
                 else:
