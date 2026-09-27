@@ -32,8 +32,13 @@ class Path:
     def add_point(self, x, y):
         self.points.append((x, y))
 
-    def draw(self, surface):
-        pygame.draw.lines(surface, (0, 0, 0), False, self.points)
+    def draw(self, surface, camera_x, camera_y):
+        if len(self.points) > 1:
+            shifted = [
+                (x - camera_x, y - camera_y)
+                for x, y in self.points
+            ]
+            pygame.draw.lines(surface, (0, 0, 0), False, shifted, 2)
 
 class Car:
     def __init__(self, x, y):
@@ -84,11 +89,19 @@ class Car:
         self.x += math.cos(rad) * self.speed
         self.y += math.sin(rad) * self.speed
 
-    def draw(self, surface):
-        rotated_image = pygame.transform.rotate(self.original_image, -self.angle)
-        rect = rotated_image.get_rect(center=(self.x, self.y))
+    def draw(self, surface, camera_x, camera_y):
+        rotated_image = pygame.transform.rotate(
+            self.original_image,
+            -self.angle
+        )
+
+        screen_x = self.x - camera_x
+        screen_y = self.y - camera_y
+
+        rect = rotated_image.get_rect(center=(screen_x, screen_y))
         surface.blit(rotated_image, rect.topleft)
-        self.path.draw(surface)
+
+        self.path.draw(surface, camera_x, camera_y)
 
 def main(control_func):
     car = Car(WIDTH // 2, HEIGHT // 2)
@@ -103,8 +116,10 @@ def main(control_func):
                 sys.exit()
 
         commands = control_func()
+        camera_x = car.x - WIDTH / 2
+        camera_y = car.y - HEIGHT / 2
         car.update(commands)
-        car.draw(screen)
+        car.draw(screen, camera_x, camera_y)
 
         pygame.display.flip()
         clock.tick(60)  # 60 FPS
