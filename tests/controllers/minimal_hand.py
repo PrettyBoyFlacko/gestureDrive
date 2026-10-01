@@ -87,10 +87,9 @@ def get_commands():
                 mcp = np.array([lm[mcp_i].x, lm[mcp_i].y, lm[mcp_i].z])
                 pip = np.array([lm[pip_i].x, lm[pip_i].y, lm[pip_i].z])
                 dip = np.array([lm[dip_i].x, lm[dip_i].y, lm[dip_i].z])
-
-            angle = joint_angle(mcp, pip, dip)
-            bends_avg += angle
-            bends_avg /= 4
+                angle = joint_angle(mcp, pip, dip)
+                bends_avg += angle
+            bends_avg /= len(FINGERS)
 
             thumb_threshold = 0.5
             if abs(thumb_dir[1]) > thumb_threshold:
@@ -101,10 +100,13 @@ def get_commands():
                     steering = "RIGHT"
                     commands.append("RIGHT")
 
-            bend_threshold = 0.05
+            bend_threshold = 0.2
+            print(bends_avg)
             if bends_avg > bend_threshold:
                 command = "FORWARD"
                 commands.append("UP")
+                if bends_avg > 0.4:
+                    commands.append("FAST")
 
     # Display text
     cv2.putText(
