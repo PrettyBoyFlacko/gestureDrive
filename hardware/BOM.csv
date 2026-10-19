@@ -1,0 +1,16 @@
+id,item,qty,est_usd_low,est_usd_high,action,search_query
+HAVE-01,ESP32 DevKit Elegoo,1,0,0,have,n/a
+HAVE-02,Laptop webcam,1,0,0,have,n/a
+GD-01,TT geared DC motor,2,6,10,buy,TT motor dual shaft robot 2 pack
+GD-02,65mm TT-hub wheel,4,6,10,buy,65mm robot wheel TT motor
+GD-03,608 bearing 8x22x7,10,4,6,buy,608 skate bearing 10 pack
+GD-04,L298N dual H-bridge,2,8,10,buy,L298N motor driver module
+GD-05,MG996R metal-gear servo,1,7,12,buy,MG996R servo metal gear
+GD-06,5V 3A buck converter,1,4,6,buy,LM2596 buck converter 3A
+GD-07,2S 7.4V 1500mAh LiPo + charger,1,20,28,buy,2S 7.4V 1500mAh LiPo charger T plug
+GD-08,LiPo fire bag,1,8,8,buy,LiPo battery fire bag
+GD-09,SPST toggle + 3A polyfuse,1,4,4,buy,12V toggle switch 3A polyfuse
+GD-10,XT60 or T-plug pigtails,1,6,6,buy,XT60 pigtail 16AWG
+GD-11,M3 hardware + heat-set inserts,1,8,12,buy,M3 heat set inserts knurled 3D print
+GD-12,Mini breadboard + Dupont pack,1,6,8,buy,mini breadboard jumper wire pack
+GD-13,Swivel caster fallback,1,3,3,buy,robot swivel caster 1 inch
