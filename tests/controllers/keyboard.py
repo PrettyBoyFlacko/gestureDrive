@@ -1,19 +1,17 @@
 import pygame
 
 def get_commands():
-    commands = []
+    commands = [0, 0]
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP]:
-        commands.append("UP")
+         commands[0] = 1
     elif keys[pygame.K_DOWN]:
-         commands.append("DOWN")
-    elif keys[pygame.K_ESCAPE]:
-        commands.append("RESET")
+         commands[0] = -1
 
     if keys[pygame.K_RIGHT]:
-        commands.append("RIGHT")
+        commands[1] = -1
     elif keys[pygame.K_LEFT]:
-        commands.append("LEFT")
+        commands[1] = 1
 
     return commands
   

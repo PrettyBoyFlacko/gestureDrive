@@ -39,7 +39,7 @@ def joint_angle(a, b, c):
 
 
 def get_commands():
-    commands = []
+    inputs = [0, 0]
     if (hands is None or cap is None):
         init()
     
@@ -95,18 +95,16 @@ def get_commands():
             if abs(thumb_dir[1]) > thumb_threshold:
                 if thumb_dir[1] > 0:
                     steering = "LEFT"
-                    commands.append("LEFT")
+                    inputs[1] = 1;
                 else:
                     steering = "RIGHT"
-                    commands.append("RIGHT")
+                    inputs[1] = -1;
 
             bend_threshold = 0.2
             print(bends_avg)
             if bends_avg > bend_threshold:
                 command = "FORWARD"
-                commands.append("UP")
-                if bends_avg > 0.4:
-                    commands.append("FAST")
+                inputs[0] = bends_avg
 
     # Display text
     cv2.putText(
@@ -123,6 +121,6 @@ def get_commands():
     )
 
     cv2.imshow("One-Hand RC Control", frame)
-    return commands
+    return inputs
 
 

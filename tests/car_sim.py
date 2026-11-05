@@ -51,19 +51,17 @@ class Car:
         self.original_image = self.image
         self.path = Path(x, y)
 
-    def update(self, commands):
+    def update(self, speed_input, steer_input):
         # Acceleration & braking
-        if "UP" in commands:
+        if speed_input > 0:
             self.speed += ACCELERATION
-        elif "DOWN" in commands:
+        elif speed_input < 0:
             self.speed -= ACCELERATION
-        elif "RESET" in commands:
-            self.x = WIDTH/2
-            self.y = HEIGHT/2
-            self.speed = 0
 
+        temp_max = MAX_SPEED*speed_input
+        
         # Limit speed
-        self.speed = max(-MAX_SPEED, min(self.speed, MAX_SPEED))
+        self.speed = max(-temp_max, min(self.speed, temp_max))
 
         # Apply friction
         if self.speed > 0:
@@ -77,9 +75,9 @@ class Car:
 
         # Steering
         if self.speed != 0:
-            if "LEFT" in commands:
+            if steer_input > 0:
                 self.angle += TURN_SPEED * (-1 if self.speed > 0 else 1)
-            if "RIGHT" in commands:
+            if steer_input < 0:
                 self.angle -= TURN_SPEED * (-1 if self.speed > 0 else 1)
             # Add to path
             self.path.add_point(self.x, self.y)
@@ -118,7 +116,7 @@ def main(control_func):
         commands = control_func()
         camera_x = car.x - WIDTH / 2
         camera_y = car.y - HEIGHT / 2
-        car.update(commands)
+        car.update(commands[0], commands[1])
         car.draw(screen, camera_x, camera_y)
 
         pygame.display.flip()
