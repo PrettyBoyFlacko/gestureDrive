@@ -51,34 +51,38 @@ static void udp_client_task(void *pvParameters)
     int addr_family = 0;
     int ip_protocol = 0;
 
-    esp_netif_ip_info_t ip_info;
-    ESP_ERROR_CHECK(esp_netif_get_ip_info(ap_netif, &ip_info));
-
     while (1) {
 
 #if defined(CONFIG_EXAMPLE_IPV4)
-        struct sockaddr_in dest_addr;
-        dest_addr.sin_addr.s_addr = ip_info.ip.addr;
-        dest_addr.sin_family = AF_INET;
-        dest_addr.sin_port = htons(PORT);
+        struct sockaddr_in addr;
+        addr.sin_addr.s_addr = htonl(INADDR_ANY);
+        addr.sin_family = AF_INET;
+        addr.sin_port = htons(PORT);
         addr_family = AF_INET;
-        ip_protocol = IPPROTO_IP;
+        ip_protocol = IPPROTO_UDP;
 #elif defined(CONFIG_EXAMPLE_IPV6)
-        struct sockaddr_in6 dest_addr = { 0 };
-        inet6_aton(HOST_IP_ADDR, &dest_addr.sin6_addr);
-        dest_addr.sin6_family = AF_INET6;
-        dest_addr.sin6_port = htons(PORT);
-        dest_addr.sin6_scope_id = esp_netif_get_netif_impl_index(EXAMPLE_INTERFACE);
+        struct sockaddr_in6 addr = { 0 };
+        inet6_aton(HOST_IP_ADDR, &addr.sin6_addr);
+        addr.sin6_family = AF_INET6;
+        addr.sin6_port = htons(PORT);
+        addr.sin6_scope_id = esp_netif_get_netif_impl_index(EXAMPLE_INTERFACE);
         addr_family = AF_INET6;
         ip_protocol = IPPROTO_IPV6;
 #elif defined(CONFIG_EXAMPLE_SOCKET_IP_INPUT_STDIN)
-        struct sockaddr_storage dest_addr = { 0 };
-        ESP_ERROR_CHECK(get_addr_from_stdin(PORT, SOCK_DGRAM, &ip_protocol, &addr_family, &dest_addr));
+        struct sockaddr_storage addr = { 0 };
+        ESP_ERROR_CHECK(get_addr_from_stdin(PORT, SOCK_DGRAM, &ip_protocol, &addr_family, &addr));
 #endif
 
         int sock = socket(addr_family, SOCK_DGRAM, ip_protocol);
         if (sock < 0) {
             ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
+            break;
+        }
+
+        int err = bind(sock, (struct sockaddr*)&addr, sizeof(addr));
+        if (err < 0) {
+            ESP_LOGE(TAG, "Unable to bind to socket: errno%d", errno);
+            close(sock);
             break;
         }
 
@@ -88,28 +92,21 @@ static void udp_client_task(void *pvParameters)
         timeout.tv_usec = 0;
         setsockopt (sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout);
 
-        ESP_LOGI(TAG, "Socket created, sending to %s:%d", HOST_IP_ADDR, PORT);
-
         while (1) {
-
-            int err = sendto(sock, payload, strlen(payload), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
-            if (err < 0) {
-                ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
-                break;
-            }
-            ESP_LOGI(TAG, "Message sent");
-
+            ESP_LOGI(TAG, "Loop");
             struct sockaddr_storage source_addr; // Large enough for both IPv4 or IPv6
             socklen_t socklen = sizeof(source_addr);
             int len = recvfrom(sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&source_addr, &socklen);
 
-            // Error occurred during receiving
             if (len < 0) {
+                if (errno == EWOULDBLOCK) {
+                    vTaskDelay(pdMS_TO_TICKS(10));
+                    continue;
+                }
+
                 ESP_LOGE(TAG, "recvfrom failed: errno %d", errno);
                 break;
-            }
-            // Data received
-            else {
+            } else {
                 rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
                 ESP_LOGI(TAG, "Received %d bytes from %s:", len, host_ip);
                 ESP_LOGI(TAG, "%s", rx_buffer);
