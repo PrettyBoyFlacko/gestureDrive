@@ -56,7 +56,6 @@ class SerialSink:
 
 
 class HeartbeatSender:
-    """Send on change, plus a periodic repeat so a dropped packet cannot leave motors on."""
 
     def __init__(self, sink: CommandSink, hz: float = HEARTBEAT_HZ) -> None:
         self._sink = sink

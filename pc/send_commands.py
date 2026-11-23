@@ -1,11 +1,3 @@
-"""Scripted command sender for USB serial or WiFi UDP bring-up (no camera).
-
-Examples:
-    python send_commands.py --udp --script demo
-    python send_commands.py --serial COM5 --once FORWARD
-    python send_commands.py --udp --impossible-servo
-"""
-
 from __future__ import annotations
 
 import argparse

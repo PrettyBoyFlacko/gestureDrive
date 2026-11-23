@@ -105,9 +105,10 @@ static void applyCommand(const String &cmd) {
   const bool hasRight = cmd.endsWith("RIGHT") || cmd == "RIGHT";
 
   if (hasReverse) forward = false;
+  const int drivePwm = hasForward ? PWM_FORWARD : PWM_REVERSE;
   if (hasForward || hasReverse) {
-    leftPwm = PWM_MAX;
-    rightPwm = PWM_MAX;
+    leftPwm = drivePwm;
+    rightPwm = drivePwm;
   }
 
 #if DRIVE_MODE == DRIVE_ACKERMANN
@@ -119,25 +120,25 @@ static void applyCommand(const String &cmd) {
   }
 #else
   if (cmd == "LEFT") {
-    setMotor(PIN_IN1, PIN_IN2, PIN_ENA, PWM_MAX, false);
-    setMotor(PIN_IN3, PIN_IN4, PIN_ENB, PWM_MAX, true);
+    setMotor(PIN_IN1, PIN_IN2, PIN_ENA, PWM_TURN, false);
+    setMotor(PIN_IN3, PIN_IN4, PIN_ENB, PWM_TURN, true);
     steering.write(SERVO_CENTER);
     motorsEnabled = true;
     return;
   }
   if (cmd == "RIGHT") {
-    setMotor(PIN_IN1, PIN_IN2, PIN_ENA, PWM_MAX, true);
-    setMotor(PIN_IN3, PIN_IN4, PIN_ENB, PWM_MAX, false);
+    setMotor(PIN_IN1, PIN_IN2, PIN_ENA, PWM_TURN, true);
+    setMotor(PIN_IN3, PIN_IN4, PIN_ENB, PWM_TURN, false);
     steering.write(SERVO_CENTER);
     motorsEnabled = true;
     return;
   }
   if (hasLeft) {
     leftPwm = PWM_DIFF_INSIDE;
-    rightPwm = PWM_MAX;
+    rightPwm = drivePwm;
   }
   if (hasRight) {
-    leftPwm = PWM_MAX;
+    leftPwm = drivePwm;
     rightPwm = PWM_DIFF_INSIDE;
   }
 #endif

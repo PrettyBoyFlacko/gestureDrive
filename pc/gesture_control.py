@@ -13,7 +13,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from protocol import (  
     CENTER,
-    COMMAND_DWELL_MS,
     DEAD_ZONE_X_FRACTION,
     DEAD_ZONE_Y_FRACTION,
     DEFAULT_ESP32_IP,
@@ -25,7 +24,6 @@ from protocol import (
     RIGHT,
     STOP,
 )
-from smoother import CommandSmoother  # noqa: E402
 from transport import HeartbeatSender, NullSink, SerialSink, UdpSink  # noqa: E402
 
 mp_hands = mp.solutions.hands
@@ -88,7 +86,6 @@ def main() -> None:
         transport_name = "print-only"
 
     sender = HeartbeatSender(sink)
-    smoother = CommandSmoother(COMMAND_DWELL_MS)
     keyboard_mode = False
     lost_since: float | None = None
     key_latch: dict[str, float] = {}
@@ -246,12 +243,11 @@ def main() -> None:
                         kb_cmd = CENTER
 
                 raw_command = kb_cmd if keyboard_mode else command
-                if raw_command == STOP or not two_hands and not keyboard_mode:
-                    smoothed = smoother.update(STOP)
-                else:
-                    smoothed = smoother.update(raw_command)
+            
+                if not keyboard_mode and not two_hands:
+                    raw_command = STOP
 
-                sender.update(smoothed)
+                sender.update(raw_command)
 
                 frames += 1
                 if now - fps_t >= 0.5:
@@ -259,12 +255,12 @@ def main() -> None:
                     fps_t = now
                     frames = 0
 
-                if smoothed != prev_print:
-                    print(f"Command: {smoothed} | Speed: {speed} | Steering: {steering} | armed={armed}")
-                    prev_print = smoothed
+                if raw_command != prev_print:
+                    print(f"Command: {raw_command} | Speed: {speed} | Steering: {steering} | armed={armed}")
+                    prev_print = raw_command
 
                 cv2.putText(
-                    frame, f"Command: {smoothed}", (10, h - 70),
+                    frame, f"Command: {raw_command}", (10, h - 70),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2,
                 )
                 cv2.putText(
